@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>To-Do List</title>
+</head>
+<body>
+
+<h1>My To-Do List</h1>
+
+<form method="POST">
+    {% csrf_token %}
+    <input type="text" name="title" placeholder="Enter task">
+    <button type="submit">Add</button>
+</form>
+
+<ul>
+{% for task in tasks %}
+<li>
+
+<form action="/toggle/{{ task.id }}/" method="POST" style="display:inline;">
+{% csrf_token %}
+<input type="checkbox"
+onchange="this.form.submit()"
+{% if task.completed %}checked{% endif %}>
+</form>
+
+{% if task.completed %}
+<s>{{ task.title }}</s>
+{% else %}
+{{ task.title }}
+{% endif %}
+
+<a href="/delete/{{ task.id }}/">Delete</a>
+
+</li>
+{% endfor %}
+</ul>
+
+</body>
+</html>
