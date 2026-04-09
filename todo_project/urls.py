@@ -18,10 +18,14 @@ from django.contrib import admin
 from django.urls import path
 from todo import views
 
+
 urlpatterns = [
     path('admin/', admin.site.urls),
         path('', views.task_list),
         path('delete/<int:id>/', views.delete_task, name='delete'),
         path('toggle/<int:id>/', views.toggle_complete, name='toggle'),
+        path('api/tasks/', views.api_task_list, name='api-tasks'),
+        path('api/calculate/', views.task_list, name='calculate'),  # point to same view
+
         
 ]

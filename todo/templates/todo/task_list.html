@@ -1,40 +1,68 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>To-Do List</title>
+    <title>My To-Do List</title>
 </head>
 <body>
 
 <h1>My To-Do List</h1>
 
+<!-- Form to add new tasks -->
 <form method="POST">
     {% csrf_token %}
-    <input type="text" name="title" placeholder="Enter task">
+    <input type="text" name="title" placeholder="Enter task" required>
     <button type="submit">Add</button>
 </form>
 
+<!-- Task list -->
 <ul>
 {% for task in tasks %}
-<li>
+    <li>
+        <!-- Toggle completion -->
+        <form action="/toggle/{{ task.id }}/" method="POST" style="display:inline;">
+            {% csrf_token %}
+            <input type="checkbox" onchange="this.form.submit()" {% if task.completed %}checked{% endif %}>
+        </form>
 
-<form action="/toggle/{{ task.id }}/" method="POST" style="display:inline;">
-{% csrf_token %}
-<input type="checkbox"
-onchange="this.form.submit()"
-{% if task.completed %}checked{% endif %}>
-</form>
+        <!-- Task title -->
+        {% if task.completed %}
+            <s>{{ task.title }}</s>
+        {% else %}
+            {{ task.title }}
+        {% endif %}
 
-{% if task.completed %}
-<s>{{ task.title }}</s>
-{% else %}
-{{ task.title }}
-{% endif %}
-
-<a href="/delete/{{ task.id }}/">Delete</a>
-
-</li>
+        <!-- Delete link -->
+        <a href="/delete/{{ task.id }}/">Delete</a>
+    </li>
 {% endfor %}
 </ul>
+
+<!-- API Calculation Link -->
+ <a href="/api/calculate/" id="calculate-link">Calculate Tasks</a>
+
+<!-- Placeholder for API result -->
+<p id="result"></p>
+
+
+<script>
+document.getElementById("calculate-link").addEventListener("click", function(event) {
+    event.preventDefault(); // Prevent normal navigation
+
+    const url = this.getAttribute("href"); // "/api/calculate/"
+
+    // Update browser URL without reloading
+    history.pushState(null, "", url);
+
+    // Fetch the API
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById("result").innerText = "Completed Tasks: " + data.completed_tasks;
+        })
+        .catch(error => console.error("Error:", error));
+});
+</script>
+
 
 </body>
 </html>
