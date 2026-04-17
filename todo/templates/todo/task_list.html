@@ -38,30 +38,11 @@
 </ul>
 
 <!-- API Calculation Link -->
- <a href="/api/calculate/" id="calculate-link">Calculate Tasks</a>
-
+<a href="/api/calculate/">Calculate Tasks</a>
 <!-- Placeholder for API result -->
 <p id="result"></p>
 
 
-<script>
-document.getElementById("calculate-link").addEventListener("click", function(event) {
-    event.preventDefault(); // Prevent normal navigation
-
-    const url = this.getAttribute("href"); // "/api/calculate/"
-
-    // Update browser URL without reloading
-    history.pushState(null, "", url);
-
-    // Fetch the API
-    fetch(url)
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById("result").innerText = "Completed Tasks: " + data.completed_tasks;
-        })
-        .catch(error => console.error("Error:", error));
-});
-</script>
 
 
 </body>
