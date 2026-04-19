@@ -1,32 +1,51 @@
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from .models import Task
-from .serializers import TaskSerializer
+from .serializers import TaskSerializer, RegisterSerializer
+
+
+@api_view(['POST'])
+def register(request):
+    serializer = RegisterSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response({"message": "User created"})
+    return Response(serializer.errors)
 
 
 @api_view(['GET'])
-def api_task_list(request):
-    tasks = Task.objects.all()
+@permission_classes([IsAuthenticated])
+def task_list(request):
+    tasks = Task.objects.filter(user=request.user)
     serializer = TaskSerializer(tasks, many=True)
     return Response(serializer.data)
 
 
 @api_view(['POST'])
-def api_add_task(request):
-    title = request.data.get('title')
-    task = Task.objects.create(title=title)
-    return Response({"message": "Task created", "id": task.id})
+@permission_classes([IsAuthenticated])
+def add_task(request):
+    serializer = TaskSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save(user=request.user)
+        return Response(serializer.data)
+    return Response(serializer.errors)
 
 
-@api_view(['POST'])
-def api_toggle_task(request, id):
-    task = Task.objects.get(id=id)
-    task.completed = not task.completed
-    task.save()
-    return Response({"completed": task.completed})
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def update_task(request, id):
+    task = Task.objects.get(id=id, user=request.user)
+    serializer = TaskSerializer(task, data=request.data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors)
 
 
-@api_view(['GET'])
-def api_calculate_completed(request):
-    count = Task.objects.filter(completed=True).count()
-    return Response({"completed_tasks": count})
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_task_api(request, id):
+    task = Task.objects.get(id=id, user=request.user)
+    task.delete()
+    return Response({"message": "Deleted"})

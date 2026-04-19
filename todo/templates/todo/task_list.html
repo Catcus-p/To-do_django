@@ -1,49 +1,125 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>My To-Do List</title>
+    <title>Todo App</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #f4f6f8;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 500px;
+            margin-top: 30px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .card {
+            background: white;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        textarea {
+            width: 100%;
+            margin: 5px 0;
+            padding: 6px;
+        }
+
+        button {
+            width: 100%;
+            padding: 8px;
+            background: green;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        a {
+            text-decoration: none;
+            color: red;
+            margin-left: 5px;
+        }
+
+        .task-title {
+            font-size: 18px;
+        }
+
+        .desc {
+            background: #f9f9f9;
+            padding: 6px;
+            margin-top: 5px;
+            font-size: 14px;
+        }
+    </style>
 </head>
+
 <body>
 
-<h1>My To-Do List</h1>
+<div class="container">
 
-<!-- Form to add new tasks -->
-<form method="POST">
-    {% csrf_token %}
-    <input type="text" name="title" placeholder="Enter task" required>
-    <button type="submit">Add</button>
-</form>
+    <div class="topbar">
+        <h2>Todo App</h2>
+        <a href="/logout/">Logout</a>
+    </div>
 
-<!-- Task list -->
-<ul>
-{% for task in tasks %}
-    <li>
-        <!-- Toggle completion -->
+    <!-- Add Task -->
+    <div class="card">
+        <form method="POST">
+            {% csrf_token %}
+
+            <textarea name="title" placeholder="Title"></textarea>
+            <textarea name="description" placeholder="Description"></textarea>
+
+            <button>Add Task</button>
+        </form>
+    </div>
+
+    <!-- Tasks -->
+    {% for task in tasks %}
+    <div class="card">
+
+        <!-- Toggle -->
         <form action="/toggle/{{ task.id }}/" method="POST" style="display:inline;">
             {% csrf_token %}
             <input type="checkbox" onchange="this.form.submit()" {% if task.completed %}checked{% endif %}>
         </form>
 
-        <!-- Task title -->
-        {% if task.completed %}
-            <s>{{ task.title }}</s>
-        {% else %}
-            {{ task.title }}
-        {% endif %}
+        <!-- Title -->
+        <div class="task-title">
+            {% if task.completed %}
+                <s>{{ task.title|safe }}</s>
+            {% else %}
+                {{ task.title|safe }}
+            {% endif %}
+        </div>
 
-        <!-- Delete link -->
-        <a href="/delete/{{ task.id }}/">Delete</a>
-    </li>
-{% endfor %}
-</ul>
+        <!-- Description -->
+        <div class="desc">
+            {{ task.description|safe }}
+        </div>
 
-<!-- API Calculation Link -->
-<a href="/api/calculate/">Calculate Tasks</a>
-<!-- Placeholder for API result -->
-<p id="result"></p>
+        <!-- Actions -->
+        <div style="margin-top:5px;">
+            <a href="/edit/{{ task.id }}/">Edit</a>
+            <a href="/delete/{{ task.id }}/">Delete</a>
+        </div>
 
+    </div>
+    {% endfor %}
 
-
+</div>
 
 </body>
 </html>

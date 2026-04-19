@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>Edit</h2>
+
+<form method="POST">
+    {% csrf_token %}
+    <textarea name="title">{{ task.title|safe }}</textarea>
+    <textarea name="description">{{ task.description|safe }}</textarea>
+    <button>Update</button>
+</form>
+
+<script src="https://cdn.ckeditor.com/4.21.0/full/ckeditor.js"></script>
+<script>
+    CKEDITOR.replace('title');
+    CKEDITOR.replace('description');
+</script>
+
+</body>
+</html>
