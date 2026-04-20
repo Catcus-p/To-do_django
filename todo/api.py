@@ -1,19 +1,37 @@
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
+from django.contrib.auth.models import User
 from .models import Task
 from .serializers import TaskSerializer, RegisterSerializer
 
 
+#  REGISTER 
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def register(request):
-    serializer = RegisterSerializer(data=request.data)
-    if serializer.is_valid():
-        serializer.save()
-        return Response({"message": "User created"})
-    return Response(serializer.errors)
+
+        serializer = RegisterSerializer(data=request.data)
+
+        if serializer.is_valid():
+          serializer.save()
+        return Response({"message": "User created successfully"})
+
+        return Response(serializer.errors)
 
 
+# DASHBOARD
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def dashboard(request):
+    return Response({
+        "user": request.user.username,
+        "message": "Welcome to your dashboard"
+    })
+
+
+# TASK LIST 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def task_list(request):
@@ -22,30 +40,44 @@ def task_list(request):
     return Response(serializer.data)
 
 
+# ADD TASK 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def add_task(request):
     serializer = TaskSerializer(data=request.data)
+
     if serializer.is_valid():
         serializer.save(user=request.user)
         return Response(serializer.data)
+
     return Response(serializer.errors)
 
 
+#  UPDATE TASK 
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 def update_task(request, id):
-    task = Task.objects.get(id=id, user=request.user)
+    try:
+        task = Task.objects.get(id=id, user=request.user)
+    except Task.DoesNotExist:
+        return Response({"error": "Task not found"})
+
     serializer = TaskSerializer(task, data=request.data, partial=True)
+
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data)
+
     return Response(serializer.errors)
 
 
+#  DELETE TASK 
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
-def delete_task_api(request, id):
-    task = Task.objects.get(id=id, user=request.user)
-    task.delete()
-    return Response({"message": "Deleted"})
+def delete_task(request, id):
+    try:
+        task = Task.objects.get(id=id, user=request.user)
+        task.delete()
+        return Response({"message": "Task deleted"})
+    except Task.DoesNotExist:
+        return Response({"error": "Task not found"})

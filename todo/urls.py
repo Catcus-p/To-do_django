@@ -3,9 +3,8 @@ from . import views, api
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 urlpatterns = [
+    #  html
     path('', views.task_list),
-    
-
     path('edit/<int:id>/', views.edit_task),
     path('delete/<int:id>/', views.delete_task),
     path('toggle/<int:id>/', views.toggle_complete),
@@ -13,12 +12,16 @@ urlpatterns = [
     path('login/', views.user_login),
     path('logout/', views.user_logout),
 
-    # API
-    path('api/register/', api.register),
+    # JWT auth
     path('api/login/', TokenObtainPairView.as_view()),
     path('api/refresh/', TokenRefreshView.as_view()),
-    path('api/tasks/', api.task_list),
-    path('api/add/', api.add_task),
-    path('api/update/<int:id>/', api.update_task),
-    path('api/delete/<int:id>/', api.delete_task_api),
+
+    # API
+    path('api/register/', api.register),
+    path('api/dashboard/', api.dashboard),
+
+    path('api/tasks/', api.task_list),              # get all tasks
+    path('api/tasks/add/', api.add_task),          # post create task
+    path('api/tasks/<int:id>/', api.update_task),  # put update
+    path('api/tasks/<int:id>/delete/', api.delete_task),  # delete task
 ]
