@@ -7,30 +7,6 @@ from .models import Task
 from .serializers import TaskSerializer, RegisterSerializer
 
 
-#  REGISTER 
-@api_view(['POST'])
-@permission_classes([AllowAny])
-def register(request):
-
-        serializer = RegisterSerializer(data=request.data)
-
-        if serializer.is_valid():
-          serializer.save()
-        return Response({"message": "User created successfully"})
-
-        return Response(serializer.errors)
-
-
-# DASHBOARD
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def dashboard(request):
-    return Response({
-        "user": request.user.username,
-        "message": "Welcome to your dashboard"
-    })
-
-
 # TASK LIST 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
