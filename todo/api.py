@@ -16,7 +16,7 @@ def task_list(request):
     return Response(serializer.data)
 
 
-# ADD TASK 
+# add task 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def add_task(request):
@@ -29,7 +29,7 @@ def add_task(request):
     return Response(serializer.errors)
 
 
-#  UPDATE TASK 
+#  update task
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 def update_task(request, id):
@@ -47,7 +47,7 @@ def update_task(request, id):
     return Response(serializer.errors)
 
 
-#  DELETE TASK 
+#  delete task 
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
 def delete_task(request, id):

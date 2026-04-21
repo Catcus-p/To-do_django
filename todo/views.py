@@ -16,7 +16,6 @@ def register(request):
         User.objects.create_user(username=username, password=password)
         return redirect('/login/')
 
-    # IMPORTANT: THIS FIXES YOUR ERROR
     return render(request, 'todo/register.html')
 
 def task_list(request):

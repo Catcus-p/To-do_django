@@ -42,6 +42,12 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'ckeditor'
 ]
+CKEDITOR_CONFIGS = {
+    'default': {
+        'removePlugins': 'stylesheetparser',
+        'allowedContent': True,
+    }
+}
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
